@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <style>
+            @font-face {
+                font-family: "codigoBarras";
+                src: url("C:/Users/gibran.silva/Downloads/SUCODBAR/SUCODBAR.ttf");
+            }
+            
+            .codigoBarras {
+                font-family: "codigoBarras";
+                font-size: xx-large;
+            }
+            </style>
+    </head>
+    <body>
+        <div>Codigo de Barras</div>
+        <p>1234567890</p>
+        <input type="text" id="digitalLine"  size="60" maxlength="60"/>
+        <div id="barCode" class="codigoBarras"></div>
+        <button onclick="printBarCode();">Gerar</button>
+
+        <script type="text/javascript" >
+
+            String.prototype.removeNonDigits = function(){
+                return this.replace(/[^0-9]/gi, '');
+            }
+
+            Number.prototype.pad = function(size) {
+                var sign = Math.sign(this) === -1 ? '-' : '';
+                return sign + new Array(size).concat([Math.abs(this)]).join('0').slice(-size);
+            }
+
+            var barcodeMapper = ["B{","Jj","Dj","Li","Bx","Jw","Dw","Bn","Jm","Dm","Qv","Wd","Sd","Yc","Qt","Ws","Ss","Qh","Wg","Sg","Ev","Md","Gd","Oc","Et","Ms","Gs","Eh","Mg","Gg","Uu","[b","Vb","\a","Ur","[q","Vq","Uf","[e","Ve","Bv","Jd","Dd","Lc","Bt","Js","Ds","Bh","Jg","Dg","Ru","Xb","Tb","Za","Rr","Xq","Tq","Rf","Xe","Te","Fu","Nb","Hb","Pa","Fr","Nq","Hq","Ff","Ne","He","A|","Il","Cl","Kk","Az","Iy","Cy","Ap","Io","Co","Q{","Wj","Sj","Yi","Qx","Ww","Sw","Qn","Wm","Sm","E{","Mj","Gj","Oi","Ex","Mw","Gw","En","Mm","Gm"];
+            
+            var buildBarCode = (digitalLine) => {
+
+                if (digitalLine.length < 47)
+                    digitalLine = digitalLine.pad(47);
+
+                var barCode = digitalLine.substr(0, 3) + 
+                                 digitalLine.substr(3, 1) +
+                                 digitalLine.substr(32, 15) +
+                                 digitalLine.substr(4, 5) +
+                                 digitalLine.substr(10, 6) +
+                                 digitalLine.substr(16, 4) +
+                                 digitalLine.substr(21, 10);
+
+                return barCode;
+            }
+
+            var printBarCode = () => {
+                var value = document.getElementById('digitalLine').value;
+
+                var digitalLine = value.removeNonDigits();
+
+                var barCodeRaw = buildBarCode(digitalLine);
+
+                if (barCodeRaw.length == 0) return;
+
+                var barCode = '';
+                for (let index = 2; index < barCodeRaw.length; index+=2) {
+                    const element = barCodeRaw[index];
+                    barCode += barcodeMapper[element];
+                }
+
+                document.getElementById('barCode').innerHTML = '(' + barCode + ')';
+            }
+        </script>
+    </body>
+</html>
